@@ -16,6 +16,44 @@
 # @see http://rubydoc.info/stdlib/core/1.9.2/Module#alias_method-instance_method
 # 
 class Quotes
+  DEFAULT_QUOTE = 'Could not find a quote at this time'
   
+  class << self; attr_accessor :missing_quote; end
+
+  self.missing_quote = DEFAULT_QUOTE
   
+  def self.load(file)
+    self.new :file => file
+  end
+    
+  attr_accessor :file
+  
+  def initialize(file={})
+    @file = file[:file]
+  end
+  
+  def all
+    if File.exists? file
+      File.readlines(file).map { |quote| quote.strip }
+    else
+      []
+    end
+  end
+  
+  def quotes
+    all
+  end
+  
+  def find(index)
+    all.empty? ? Quotes.missing_quote : all[index].nil? ? all.sample : all[index]
+  end
+  
+  def [](index)
+    find(index)
+  end
+  
+  def search(criteria = {})
+    return all if all.empty? || (file && criteria.empty?)
+    criteria.map { |key, value| all.select { |quote| quote.send("#{key}?", value) } }.flatten
+  end  
 end
