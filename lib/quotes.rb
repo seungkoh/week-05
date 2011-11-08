@@ -39,21 +39,16 @@ class Quotes
       []
     end
   end
-  
-  def quotes
-    all
-  end
-  
+    
   def find(index)
     all.empty? ? Quotes.missing_quote : all[index].nil? ? all.sample : all[index]
-  end
-  
-  def [](index)
-    find(index)
   end
   
   def search(criteria = {})
     return all if all.empty? || (file && criteria.empty?)
     criteria.map { |key, value| all.select { |quote| quote.send("#{key}?", value) } }.flatten
   end  
+  
+  alias_method :quotes, :all
+  alias_method :[], :find
 end
